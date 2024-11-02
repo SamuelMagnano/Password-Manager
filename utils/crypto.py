@@ -24,7 +24,7 @@ class Cipher:
     encrypted_email = f_email.encrypt(email.encode('utf-8')) #forse devo fare b + ' + email.encode(utf-8) + '
     encrypted_psw = f_psw.encrypt(psw.encode('utf-8'))
     print(f"\nCripted email:{encrypted_email}\nCripted psw:{encrypted_psw}\n")
-    #Cipher.decryption(self,encrypted_email,encrypted_psw) test per vedere se funziona la decription (funziona)
+    Cipher.decryption(self,encrypted_email,encrypted_psw) #test per vedere se funziona la decription (funziona)
     #return encrypted_email,encrypted_psw
   
   def decryption(self,encrypted_email,encrypted_psw):
