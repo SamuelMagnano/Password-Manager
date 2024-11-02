@@ -1,4 +1,4 @@
-from classes import sql_operations,crypto
+from utils import sql_operations,crypto
 
 if __name__ == "__main__":
   cycle_condition = True
