@@ -31,10 +31,12 @@ def initialization():
     except Error as e:
         print(f"Error: {e}")
             
-def upload(cipher,name,email,psw):
-    #TODO fare il controllo che la email abbia sia @ ma anche .com .it ecc usando regex
-    #TODO fare il controllo che il sito abbia .com .it ecc usando regex
-    while '@' not in email:
+def upload(cipher,url,email,psw):
+    #site url check
+    while not re.match(r"^(https?://)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(/[\w\.-]*)*/?$",url):
+        url = input("Site address not valid. Insert a valid one: ")
+    #email check
+    while not re.match(r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$",email):
         email = input("Email not valid. Insert a valid one: ")
     cipher.encryption(email,psw)
     #TODO fare la INSERT INTO dei valori restituiti dopo l'encoding (ti arrivano come stringa e non come bytes)

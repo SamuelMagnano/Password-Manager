@@ -1,4 +1,5 @@
 from cryptography.fernet import Fernet 
+from random import randrange
 
 class Cipher:
   #keys generation if not correct (memorization as long as the main process is alive)
@@ -17,7 +18,24 @@ class Cipher:
     else:
       self.email_key = email_key.encode('utf-8')
       self.psw_key = psw_key.encode('utf-8')
-      
+
+  #16 characters random password generator
+  def random_psw(self):
+    allowed_characters = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+',
+    '[', ']', '{', '}', '|', ';', ':', "'", ',', '<', '.', '>', '/', '?']
+    psw = ""
+    for _ in range(0,16):
+      #randrange(n) gives a random integer in the range [0,n-1] 
+      psw = psw + allowed_characters[randrange(len(allowed_characters))]
+    return psw
+
+  #email and password encryption
   def encryption(self,email,psw):
     f_email = Fernet(self.email_key)
     f_psw = Fernet(self.psw_key)
@@ -26,7 +44,8 @@ class Cipher:
     print(f"\nCripted email:{encrypted_email}\nCripted psw:{encrypted_psw}\n")
     Cipher.decryption(self,encrypted_email,encrypted_psw) #test per vedere se funziona la decription (funziona)
     #return encrypted_email,encrypted_psw
-  
+
+  #email and password decryption
   def decryption(self,encrypted_email,encrypted_psw):
     f_email = Fernet(self.email_key)
     f_psw = Fernet(self.psw_key)
