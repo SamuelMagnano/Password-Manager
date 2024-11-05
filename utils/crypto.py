@@ -39,17 +39,32 @@ class Cipher:
   def encryption(self,email,psw):
     f_email = Fernet(self.email_key)
     f_psw = Fernet(self.psw_key)
-    encrypted_email = f_email.encrypt(email.encode('utf-8')) #forse devo fare b + ' + email.encode(utf-8) + '
+    encrypted_email = f_email.encrypt(email.encode('utf-8'))
     encrypted_psw = f_psw.encrypt(psw.encode('utf-8'))
     print(f"\nCripted email:{encrypted_email}\nCripted psw:{encrypted_psw}\n")
-    Cipher.decryption(self,encrypted_email,encrypted_psw) #test per vedere se funziona la decription (funziona)
-    #return encrypted_email,encrypted_psw
+    return encrypted_email,encrypted_psw
 
   #email and password decryption
   def decryption(self,encrypted_email,encrypted_psw):
-    f_email = Fernet(self.email_key)
-    f_psw = Fernet(self.psw_key)
-    original_email = f_email.decrypt(encrypted_email).decode() #decrypt deciphers while decode converts bytes to string, otherwise i would have b' at the start of the string
-    original_psw = f_psw.decrypt(encrypted_psw).decode()
-    print(f"\nDecripted email: {original_email}\nDecripted psw: {original_psw}\n")
-    #return original_email,original_psw
+    try:
+      f_email = Fernet(self.email_key)
+      f_psw = Fernet(self.psw_key)
+      original_email = f_email.decrypt(encrypted_email).decode() #decrypt deciphers while decode converts bytes to string, otherwise i would have b' at the start of the string
+      original_psw = f_psw.decrypt(encrypted_psw).decode()
+      #print(f"\nDecripted email: {original_email}\nDecripted psw: {original_psw}\n")
+      return original_email,original_psw
+    except:
+      print("The key used is not the correct one the decryption!")
+      #i guess i could raise an error and let it be handled by the caller but i'm not sure if it is possible in python
+      return -1,-1
+  
+    #email and password decryption
+  def email_decryption(self,encrypted_email):
+    try:
+      f_email = Fernet(self.email_key)
+      original_email = f_email.decrypt(encrypted_email).decode() #decrypt deciphers while decode converts bytes to string, otherwise i would have b' at the start of the string
+      #print(f"\nDecripted email: {original_email}")
+      return original_email
+    except:
+      print("The key used is not the correct one the decryption!")
+      return -1
