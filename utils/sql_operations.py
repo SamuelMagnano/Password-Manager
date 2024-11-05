@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 import re
+from pandas import DataFrame
 
 #database initialization
 #if the db doesn't exists then create it, otherwise nothing 
@@ -106,7 +107,7 @@ def get_email_psw_from_url(cipher,url):
                 #decrypting the emails and checking if any of them are the same as the one i want to insert
                 for element in tuples_list:
                     original_email,original_password = cipher.decryption(element[0],element[1])
-                    if element == (-1,-1):
+                    if original_email == -1 or original_password == -1:
                         break
                     else:
                         print(f"Email: {original_email}")
@@ -121,3 +122,38 @@ def get_email_psw_from_url(cipher,url):
             print("\nCannot open connection to the database!\n")
     except Error as e:
         print(f"Error: {e}")
+        
+    
+def db_retrieval(cipher):
+    database = DataFrame(columns=["Name", "Email", "Password"])
+    try:
+        db = mysql.connector.MySQLConnection(host="localhost", user="root", database="password_manager", password="", port=3306) #if you are using XAMPP
+        #db = mysql.connector.MySQLConnection(host="localhost", database="password_manager", user="root", password="admin", port=3306) if you are using MySQL wokbench
+        #trying to connect to db
+        if db.is_connected():
+            print("\nConnection to database opened")
+            csr = db.cursor()
+            #get emails+psw from URL
+            try:
+                csr.execute("SELECT * FROM sites")
+                print("Database retrieval and decription")
+                whole_database = csr.fetchall()
+                #decrypting the emails and passwords and adding them to the DataFrame
+                for element in whole_database:
+                    original_email,original_password = cipher.decryption(element[1],element[2])
+                    if original_email == -1 or original_password == -1:
+                        break
+                    else:
+                       database = database._append({"Name": element[0], "Email": original_email, "Password": original_password}, ignore_index=True)
+            except Error as e:
+                print("An error occurred and the operation has not been executed. Try again.")
+                print(e)
+            csr.close()
+            db.close()
+            print("Connection closed")
+        else:
+            print("\nCannot open connection to the database!\n")
+    except Error as e:
+        print(f"Error: {e}")
+    print()
+    print(database.sort_values(by=['Name']).to_string(index=False))
