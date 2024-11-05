@@ -41,6 +41,8 @@ def upload(cipher,url,email,psw):
     #email check
     while not re.match(r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$",email):
         email = input("Email not valid. Insert a valid one: ")
+    while not re.match(r"^[\w!@#$%^&*()\-_=+[\]{}|;:'\",.<>?/]{1,16}$",psw):
+        psw = input("Password not valid. Insert a valid one: ")
     encrypted_email,encrypted_psw = cipher.encryption(email,psw)
     
     insert_condition = True
