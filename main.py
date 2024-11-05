@@ -24,4 +24,4 @@ if __name__ == "__main__":
         sql_operations.get_email_psw_from_url(cipher,str(input("\nURL: ")))
       #database retrieval
       case 4:
-        sql_operations.db_retrieval(cipher)
+        sql_operations.db_retrieval(cipher,str(input("Do you want to save the database as a .csv [y/n]: ")))

@@ -126,8 +126,8 @@ def get_email_psw_from_url(cipher,url):
         print(f"Error: {e}")
         
     
-def db_retrieval(cipher):
-    database = DataFrame(columns=["Name", "Email", "Password"])
+def db_retrieval(cipher,response):
+    ciphered_database,deciphered_database = DataFrame(columns=["name", "email", "password"]),DataFrame(columns=["name", "email", "password"])
     try:
         db = mysql.connector.MySQLConnection(host="localhost", user="root", database="password_manager", password="", port=3306) #if you are using XAMPP
         #db = mysql.connector.MySQLConnection(host="localhost", database="password_manager", user="root", password="admin", port=3306) if you are using MySQL wokbench
@@ -146,7 +146,8 @@ def db_retrieval(cipher):
                     if original_email == -1 or original_password == -1:
                         break
                     else:
-                       database = database._append({"Name": element[0], "Email": original_email, "Password": original_password}, ignore_index=True)
+                       deciphered_database = deciphered_database._append({"name": element[0], "email": original_email, "password": original_password}, ignore_index=True)
+                       ciphered_database = ciphered_database._append({"name": element[0], "email": element[1], "password": element[2]}, ignore_index=True)
             except Error as e:
                 print("An error occurred and the operation has not been executed. Try again.")
                 print(e)
@@ -158,4 +159,9 @@ def db_retrieval(cipher):
     except Error as e:
         print(f"Error: {e}")
     print()
-    print(database.sort_values(by=['Name']).to_string(index=False))
+    print(deciphered_database.sort_values(by=['name']).to_string(index=False))
+    if response in [""," ","y","yes"]:
+        deciphered_database.to_csv('deciphered_database.csv', index=False)
+        print("\nciphered_dat.csv created/updated")
+        ciphered_database.to_csv('ciphered_database.csv', index=False)
+        print("ciphered_database.csv created/updated")
