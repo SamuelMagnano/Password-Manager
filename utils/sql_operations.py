@@ -63,6 +63,7 @@ def upload(cipher,url,email,psw):
                     element = cipher.email_decryption(element[0])
                     #if -1 it means that the key we used is wrong so we should't upload anything
                     if element == email or element == -1: 
+                        #the error print is in the cipher part of the decription
                         insert_condition = False
                         break
             except Error as e:
@@ -110,6 +111,7 @@ def get_email_psw_from_url(cipher,url):
                 for element in tuples_list:
                     original_email,original_password = cipher.decryption(element[0],element[1])
                     if original_email == -1 or original_password == -1:
+                        #the error print is in the cipher part of the decription
                         break
                     else:
                         print(f"Email: {original_email}")
@@ -140,10 +142,11 @@ def db_retrieval(cipher,response):
                 csr.execute("SELECT * FROM sites")
                 print("Database retrieval and decription")
                 whole_database = csr.fetchall()
-                #decrypting the emails and passwords and adding them to the DataFrame
+                #decrypting the emails and passwords and adding them to the DataFrames
                 for element in whole_database:
                     original_email,original_password = cipher.decryption(element[1],element[2])
                     if original_email == -1 or original_password == -1:
+                        #the error print is in the cipher part of the decription
                         break
                     else:
                        deciphered_database = deciphered_database._append({"name": element[0], "email": original_email, "password": original_password}, ignore_index=True)
