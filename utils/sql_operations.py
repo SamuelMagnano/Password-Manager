@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import Error
 import re
 from pandas import DataFrame
+from tabulate import tabulate
 
 #database initialization
 #if the db doesn't exists then create it, otherwise nothing 
@@ -41,8 +42,10 @@ def upload(cipher,url,email,psw):
     #email check
     while not re.match(r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$",email):
         email = input("Email not valid. Insert a valid one: ")
-    while not re.match(r"^[\w!@#$%^&*()\-_=+[\]{}|;:'\",.<>?/]{1,16}$",psw):
-        psw = input("Password not valid. Insert a valid one: ")
+    #password check
+    while not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,16}$",psw):
+        psw = input("Password not valid. It must contain an upper case, lower case, a number, a special character and be long between 8/16 characters.\
+                    \nInsert a valid one: ")
     encrypted_email,encrypted_psw = cipher.encryption(email,psw)
     
     insert_condition = True
@@ -107,7 +110,7 @@ def get_email_psw_from_url(cipher,url):
                 csr.execute("SELECT email,psw FROM sites WHERE name = (%s)", ((url,)))
                 print("Crypted emails and passwords retrieved and ready to be decrypted.")
                 tuples_list = csr.fetchall()
-                #decrypting the emails and checking if any of them are the same as the one i want to insert
+                #decrypting the emails and passwords
                 for element in tuples_list:
                     original_email,original_password = cipher.decryption(element[0],element[1])
                     if original_email == -1 or original_password == -1:
@@ -127,6 +130,41 @@ def get_email_psw_from_url(cipher,url):
     except Error as e:
         print(f"Error: {e}")
         
+        
+def get_site_psw_from_email(cipher,email):
+    while not re.match(r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$",email):
+        email = input("Email not valid. Insert a valid one: ")
+    try:
+        db = mysql.connector.MySQLConnection(host="localhost", user="root", database="password_manager", password="", port=3306) #if you are using XAMPP
+        #db = mysql.connector.MySQLConnection(host="localhost", database="password_manager", user="root", password="admin", port=3306) if you are using MySQL wokbench
+        if db.is_connected():
+            print("\nConnection to database opened")
+            csr = db.cursor()
+            #get whole database and then process the result
+            try:
+                csr.execute("SELECT * FROM sites")
+                print("Whole database retrieved. Decripting the emails to obtain the linked site + password")
+                tuples_list = csr.fetchall()
+                #decrypting the emails and checking if any of them are the same as the one i requested
+                for element in tuples_list:
+                    original_email,original_password = cipher.decryption(element[1],element[2])
+                    if original_email == -1 or original_password == -1:
+                        #the error print is in the cipher part of the decription
+                        break
+                    elif original_email == email:
+                        print(f"Url:{element[0]}")
+                        print(f"Password: {original_password}")
+            except Error as e:
+                print("An error occurred and the operation has not been executed. Try again.")
+                print(e)
+            csr.close()
+            db.close()
+            print("Connection closed")
+        else:
+            print("\nCannot open connection to the database!\n")
+    except Error as e:
+        print(f"Error: {e}")
+    
     
 def db_retrieval(cipher,response):
     ciphered_database,deciphered_database = DataFrame(columns=["name", "email", "password"]),DataFrame(columns=["name", "email", "password"])
@@ -139,7 +177,7 @@ def db_retrieval(cipher,response):
             csr = db.cursor()
             #get emails+psw from URL
             try:
-                csr.execute("SELECT * FROM sites")
+                csr.execute("SELECT name,email,psw FROM sites")
                 print("Database retrieval and decription")
                 whole_database = csr.fetchall()
                 #decrypting the emails and passwords and adding them to the DataFrames
@@ -162,9 +200,53 @@ def db_retrieval(cipher,response):
     except Error as e:
         print(f"Error: {e}")
     print()
-    print(deciphered_database.sort_values(by=['name']).to_string(index=False))
+    print(tabulate(deciphered_database.sort_values(by=['name']), headers='keys', tablefmt='fancy_grid', showindex=False))
     if response in [""," ","y","yes"]:
         deciphered_database.to_csv('deciphered_database.csv', index=False)
         print("\nciphered_dat.csv created/updated")
         ciphered_database.to_csv('ciphered_database.csv', index=False)
         print("ciphered_database.csv created/updated")
+
+# To make the delete work without downloading the whole db, deleting the single row i specified and reupload everything,
+# i had to add an id as a primary key auto-increment in the database.
+# The problem is that since i store my emails ciphered i cannot delete that row easily since a key can cipher in several ways the same string
+def delete(cipher,url,email):
+    while not re.match(r"^(https?://)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(/[\w\.-]*)*/?$",url):
+        url = input("URL not valid. Insert a valid one: ")
+    #email check
+    while not re.match(r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$",email):
+        email = input("Email not valid. Insert a valid one: ")
+        
+    row_num = 1 #rows index starts from 1 in MySQL
+    try:
+        db = mysql.connector.MySQLConnection(host="localhost", user="root", database="password_manager", password="", port=3306) #if you are using XAMPP
+        #db = mysql.connector.MySQLConnection(host="localhost", database="password_manager", user="root", password="admin", port=3306) if you are using MySQL wokbench
+        if db.is_connected():
+            print("\nConnection to database opened")
+            csr = db.cursor()
+            #get emails+psw from URL
+            try:
+                csr.execute("SELECT id,name,email FROM sites WHERE name = (%s)", ((url,)))
+                print(f"{url} rows retrieved. Decripting the emails to delete the specified one")
+                tuples_list = csr.fetchall()
+                #decrypting the emails and checking if any of them are the same as the one i requested
+                for element in tuples_list:
+                    original_email = cipher.email_decryption(element[2])
+                    if original_email == -1:
+                        #the error print is in the cipher part of the decription
+                        break
+                    elif original_email == email:
+                        csr.execute("DELETE FROM sites WHERE id = (%s)", ((element[0],)))
+                        db.commit()
+                        print(f"Deleted URL:{element[1]} email: {original_email} from password_manager!")
+                    row_num += 1
+            except Error as e:
+                print("An error occurred and the operation has not been executed. Try again.")
+                print(e)
+            csr.close()
+            db.close()
+            print("Connection closed")
+        else:
+            print("\nCannot open connection to the database!\n")
+    except Error as e:
+        print(f"Error: {e}")
