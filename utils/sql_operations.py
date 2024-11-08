@@ -46,7 +46,8 @@ def upload(cipher,url,email,psw):
     while not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,16}$",psw):
         psw = input("Password not valid. It must contain an upper case, lower case, a number, a special character and be long between 8/16 characters.\
                     \nInsert a valid one: ")
-    encrypted_email,encrypted_psw = cipher.encryption(email,psw)
+    encripted_email,encripted_psw = cipher.encryption(email,psw)
+    
     
     insert_condition = True
     #try to open connection to database
@@ -60,9 +61,9 @@ def upload(cipher,url,email,psw):
             try:
                 csr.execute("SELECT email FROM sites WHERE name = (%s)", ((url,)))
                 print("Checking if the email is already in the database for the given URL")
-                encrypted_emails_list = csr.fetchall()
+                encripted_emails_list = csr.fetchall()
                 #decrypting the emails and checking if any of them are the same as the one i want to insert
-                for element in encrypted_emails_list:
+                for element in encripted_emails_list:
                     element = cipher.email_decryption(element[0])
                     #if -1 it means that the key we used is wrong so we should't upload anything
                     if element == email or element == -1: 
@@ -83,7 +84,8 @@ def upload(cipher,url,email,psw):
         print(f"The email: {email} has never been linked to the site: {url}")
         #if i get here the connection is still open so i don't need to open it again but i must close it
         try:
-            csr.execute("INSERT INTO sites (name, email, psw) VALUES (%s,%s,%s)", (url,encrypted_email.decode('utf-8'),encrypted_psw.decode('utf-8')))
+            #decode because i need to pass it as a string and not byte
+            csr.execute("INSERT INTO sites (name, email, psw) VALUES (%s,%s,%s)", (url,encripted_email.decode('utf-8'),encripted_psw.decode('utf-8')))
             print("Site, Email, Password inserted into the database")
             db.commit()
         except Error as e:
@@ -217,7 +219,6 @@ def delete(cipher,url,email):
     while not re.match(r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$",email):
         email = input("Email not valid. Insert a valid one: ")
         
-    row_num = 1 #rows index starts from 1 in MySQL
     try:
         db = mysql.connector.MySQLConnection(host="localhost", user="root", database="password_manager", password="", port=3306) #if you are using XAMPP
         #db = mysql.connector.MySQLConnection(host="localhost", database="password_manager", user="root", password="admin", port=3306) if you are using MySQL wokbench
@@ -239,7 +240,49 @@ def delete(cipher,url,email):
                         csr.execute("DELETE FROM sites WHERE id = (%s)", ((element[0],)))
                         db.commit()
                         print(f"Deleted URL:{element[1]} email: {original_email} from password_manager!")
-                    row_num += 1
+            except Error as e:
+                print("An error occurred and the operation has not been executed. Try again.")
+                print(e)
+            csr.close()
+            db.close()
+            print("Connection closed")
+        else:
+            print("\nCannot open connection to the database!\n")
+    except Error as e:
+        print(f"Error: {e}")
+        
+def update_psw(cipher,url,email,psw):
+    while not re.match(r"^(https?://)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(/[\w\.-]*)*/?$",url):
+        url = input("URL not valid. Insert a valid one: ")
+    #email check
+    while not re.match(r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$",email):
+        email = input("Email not valid. Insert a valid one: ")
+    while not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,16}$",psw):
+        psw = input("Password not valid. It must contain an upper case, lower case, a number, a special character and be long between 8/16 characters.\
+                    \nInsert a valid one: ")
+        
+    try:
+        db = mysql.connector.MySQLConnection(host="localhost", user="root", database="password_manager", password="", port=3306) #if you are using XAMPP
+        #db = mysql.connector.MySQLConnection(host="localhost", database="password_manager", user="root", password="admin", port=3306) if you are using MySQL wokbench
+        if db.is_connected():
+            print("\nConnection to database opened")
+            csr = db.cursor()
+            #get emails+psw from URL
+            try:
+                csr.execute("SELECT id,email FROM sites WHERE name = (%s)", ((url,)))
+                print(f"{url} rows retrieved. Decripting the emails to update the password of the specified one")
+                tuples_list = csr.fetchall()
+                #decrypting the emails and checking if any of them are the same as the one i requested
+                for element in tuples_list:
+                    original_email = cipher.email_decryption(element[1])
+                    if original_email == -1:
+                        #the error print is in the cipher part of the decription
+                        break
+                    elif original_email == email:
+                        encripted_psw = cipher.psw_encryption(psw)
+                        csr.execute("UPDATE sites SET psw=(%s) WHERE id = (%s)", (encripted_psw.decode('utf-8'), element[0])) #decode because i need to pass it as a string and not byte
+                        db.commit()
+                        print(f"Updated URL:{url} email: {email} from password_manager!")
             except Error as e:
                 print("An error occurred and the operation has not been executed. Try again.")
                 print(e)

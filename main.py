@@ -36,10 +36,9 @@ if __name__ == "__main__":
       #Get sites and related passwords from email
       case 5:
         sql_operations.get_site_psw_from_email(cipher,str(input("Email: ")))
-      #TODO implement the update 
+      #update password given URL + email 
       case 6:
-        #sql_operations.update(cipher,str(input("Email: ")))
-        ...
+        sql_operations.update_psw(cipher,str(input("\nURL: ")),str(input("Email: ")),str(input("New password: ")))
       #Delete a row in the database from URL + email
       case 7:
         sql_operations.delete(cipher,str(input("\nURL: ")),str(input("Email: ")))
