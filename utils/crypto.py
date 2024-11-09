@@ -46,21 +46,21 @@ class Cipher:
     f_psw = Fernet(self.psw_key)
     encrypted_email = f_email.encrypt(email.encode('utf-8'))
     encrypted_psw = f_psw.encrypt(psw.encode('utf-8'))
-    print(f"\nCripted email:{encrypted_email}\nCripted psw:{encrypted_psw}\n")
+    #print(f"\nCripted email:{encrypted_email}\nCripted psw:{encrypted_psw}\n")
     return encrypted_email,encrypted_psw
   
   #email and password encryption
   def psw_encryption(self,psw):
     f_psw = Fernet(self.psw_key)
     encrypted_psw = f_psw.encrypt(psw.encode('utf-8'))
-    print(f"\nCripted psw:{encrypted_psw}\n")
+    #print(f"\nCripted psw:{encrypted_psw}\n")
     return encrypted_psw
   
   #email and password encryption
   def email_encryption(self,email):
     f_email = Fernet(self.email_key)
     encrypted_email = f_email.encrypt(email.encode('utf-8'))
-    print(f"\nCripted email:{encrypted_email}")
+    #print(f"\nCripted email:{encrypted_email}")
     return encrypted_email
 
 

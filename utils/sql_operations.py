@@ -1,7 +1,8 @@
 import mysql.connector
 from mysql.connector import Error
 import re
-from pandas import DataFrame
+import pandas as pd
+#from pandas import DataFrame
 from tabulate import tabulate
 
 #database initialization
@@ -97,6 +98,71 @@ def upload(cipher,url,email,psw):
     else:
         if element!=-1: print("Email already inside the database for the given URL!\nDelete the already existing one or update it.")
         
+        
+def upload_unciphered_csv(cipher):
+    path = str(input("Drag and drop the .csv file here: "))
+    df = pd.read_csv(path)
+    try:
+        db = mysql.connector.MySQLConnection(host="localhost", user="root", database="password_manager", password="", port=3306) #if you are using XAMPP
+        #db = mysql.connector.MySQLConnection(host="localhost", database="password_manager", user="root", password="admin", port=3306) if you are using MySQL wokbench
+        if db.is_connected():
+            print("\nConnection to database opened")
+            csr = db.cursor()
+            #trying to insert one row of a time, the whole dataframe inside the database
+            try:
+                for element in df.itertuples(index=False):
+                     #check if url, email, password are valid
+                    if re.match(r"^(https?://)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(/[\w\.-]*)*/?$",element[0]) and \
+                        re.match(r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$",element[1]) and \
+                        re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,16}$",element[2]):
+                         print(f"Inserting, if url + email not in the database, URL: {element[0]}, email: {element[1]}, password: {element[2]}")
+                         #i need to cipher email and password since in the csv are not ciphered
+                         csr.execute("INSERT INTO sites (name, email, psw) VALUES (%s,%s,%s)", (element[0],cipher.email_encryption(element[1]).decode('utf-8'),cipher.psw_encryption(element[2]).decode('utf-8')))
+                         db.commit()
+                    else: print(f"Invalid entry! URL: {element[0]}, email: {element[1]}, password: {element[2]}. At least one of the inputs is not valid!")
+            except Error as e:
+                  print("An error occurred and the operation has not been executed. Try again.") 
+                  print(e)
+            csr.close()
+            db.close()
+            print("Connection closed")
+        else:
+              print("\nCannot open connection to the database!\n")
+    except Error as e:
+         print(f"Error: {e}")
+         
+         
+def upload_ciphered_csv():
+    path = str(input("Drag and drop the .csv file here: "))
+    df = pd.read_csv(path)
+    try:
+        db = mysql.connector.MySQLConnection(host="localhost", user="root", database="password_manager", password="", port=3306) #if you are using XAMPP
+        #db = mysql.connector.MySQLConnection(host="localhost", database="password_manager", user="root", password="admin", port=3306) if you are using MySQL wokbench
+        if db.is_connected():
+            print("\nConnection to database opened")
+            csr = db.cursor()
+            #trying to insert one row of a time, the whole dataframe inside the database
+            try:
+                for element in df.itertuples(index=False):
+                    #check if url, email, password are valid
+                    if re.match(r"^(https?://)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(/[\w\.-]*)*/?$",element[0]) and \
+                        re.match(r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$",element[1]) and \
+                        re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,16}$",element[2]):
+                         print(f"Inserting, if url + email not in the database, URL: {element[0]}, email: {element[1]}, password: {element[2]}")
+                         #i do not need to cipher email and password since in the csv they are alredy ciphered
+                         csr.execute("INSERT INTO sites (name, email, psw) VALUES (%s,%s,%s)", (element[0],element[1],element[2]))
+                         db.commit()
+                    else: print(f"Invalid entry! URL: {element[0]}, email: {element[1]}, password: {element[2]}. At least one of the inputs is not valid!")
+            except Error as e:
+                  print("An error occurred and the operation has not been executed. Try again.") 
+                  print(e)
+            csr.close()
+            db.close()
+            print("Connection closed")
+        else:
+              print("\nCannot open connection to the database!\n")
+    except Error as e:
+         print(f"Error: {e}")
 
 def get_email_psw_from_url(cipher,url):
     while not re.match(r"^(https?://)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(/[\w\.-]*)*/?$",url):
@@ -169,7 +235,7 @@ def get_site_psw_from_email(cipher,email):
     
     
 def db_retrieval(cipher,response):
-    ciphered_database,deciphered_database = DataFrame(columns=["name", "email", "password"]),DataFrame(columns=["name", "email", "password"])
+    ciphered_database,deciphered_database = pd.DataFrame(columns=["name", "email", "password"]),pd.DataFrame(columns=["name", "email", "password"])
     try:
         db = mysql.connector.MySQLConnection(host="localhost", user="root", database="password_manager", password="", port=3306) #if you are using XAMPP
         #db = mysql.connector.MySQLConnection(host="localhost", database="password_manager", user="root", password="admin", port=3306) if you are using MySQL wokbench
