@@ -74,7 +74,7 @@ class Cipher:
       #print(f"\nDecripted email: {original_email}\nDecripted psw: {original_psw}\n")
       return original_email,original_psw
     except:
-      print("The key used is not the correct one the decryption!")
+      print("The key used is not the correct one for the decryption!")
       #i guess i could raise an error and let it be handled by the caller but i'm not sure if it is possible in python
       return -1,-1
   
@@ -85,7 +85,7 @@ class Cipher:
       original_email = f_email.decrypt(encrypted_email).decode() #decrypt deciphers while decode converts bytes to string, otherwise i would have b' at the start of the string
       return original_email
     except:
-      print("The key used is not the correct one the decryption!")
+      print("The key used is not the correct one for the decryption!")
       return -1
     
   #email decryption
@@ -95,5 +95,5 @@ class Cipher:
       original_psw = f_psw.decrypt(encrypted_psw).decode() #decrypt deciphers while decode converts bytes to string, otherwise i would have b' at the start of the string
       return original_psw
     except:
-      print("The key used is not the correct one the decryption!")
+      print("The key used is not the correct one for the decryption!")
       return -1

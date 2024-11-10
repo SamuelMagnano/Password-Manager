@@ -6,7 +6,9 @@ if __name__ == "__main__":
   print("\nIf you are already in possess of a cipher keys (Fernet key) just insert the value in between b'...'")
   cipher = crypto.Cipher(input("Insert email_key: "),input("insert psw_key: "))
   
-  print("Here is the list of doable operations:\
+  while cycle_condition:
+    print("\n--------------------------------------------------------------------------")
+    print("\nHere is the list of doable operations:\
         \n0. Exit\
         \n1. Upload URL/email/password to the Password Manager\
         \n2. Uplaod a .csv file (must be of the form name,email,psw) into the database\
@@ -16,7 +18,6 @@ if __name__ == "__main__":
         \n6. Get URLs and related passwords from email\
         \n7. Update password given a URL and email\
         \n8. Delete (URL,email,password) given URL + email")
-  while cycle_condition:
     option = input("\nChoose an option: ")
     match int(option):
       #Exit
@@ -26,7 +27,7 @@ if __name__ == "__main__":
         sql_operations.upload(cipher,str(input("\nURL: ")),str(input("Email: ")),str(input("Password: ")))
       case 2:
         yn = input("Is the .csv file you want to upload ciphered ? [y/n]: ").lower()
-        if yn in [""," ","y","yes"]: sql_operations.upload_ciphered_csv()
+        if yn in [""," ","y","yes"]: sql_operations.upload_ciphered_csv(cipher)
         else: sql_operations.upload_unciphered_csv(cipher)
       #psw generation
       case 3: 
