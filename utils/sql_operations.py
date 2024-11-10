@@ -1,5 +1,4 @@
 import re
-import warnings
 
 import mysql.connector
 import pandas as pd
