@@ -22,9 +22,10 @@ if __name__ == "__main__":
     match int(option):
       #Exit
       case 0: cycle_condition = False
-      #Upload
+      #Upload entry
       case 1:
         sql_operations.upload(cipher,str(input("\nURL: ")),str(input("Email: ")),str(input("Password: ")))
+      #Upload .csv file
       case 2:
         yn = input("Is the .csv file you want to upload ciphered ? [y/n]: ").lower()
         if yn in [""," ","y","yes"]: sql_operations.upload_ciphered_csv(cipher)
