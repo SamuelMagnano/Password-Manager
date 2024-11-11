@@ -15,6 +15,7 @@ The database is meant to be a single account ciphered password manager, called p
 The database is automatically created and set up the first time you run the code, if it does not already exist.
 Here is the SQL statement:
 ```"CREATE DATABASE password_manager"```
+
 ```"CREATE TABLE IF NOT EXISTS password_manager.sites (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, psw VARCHAR(255) NOT NULL, PRIMARY KEY (id, name, email))"```
 
 ## Database entries visualization
