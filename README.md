@@ -44,7 +44,7 @@ The keys are automatically generated (by pressing ```Enter```) if not inserted i
 
 As expressed in the cmd while running the code, we must insert the key string contained between b'...' as we need to use them as String encoded and not Byte encoded. The correct switches between String/Byte for the encoding of the keys are already inside the code and should be modified with cautions.
 
-***<ins>The keys in the keys.txt file, as the passwords that might be in previous ciphered.csv files, are not my personal ones.</ins>*** They have jsut been used for testing the program.
+***<ins>The keys in the keys.txt file, as the passwords that might be in previous ciphered.csv files, are not my personal ones.</ins>*** They have just been used for testing the program.
 
 ## Modules
 For the cryptography:
