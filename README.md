@@ -2,7 +2,7 @@
 
 Since i almost lost access to my spotify account due to my poor password amministration, i decided to code and create my personal localhost password manager. 
 
-For the connection to the database i am using ```XAMPP```, but there should not be problems by using something else.
+For the connection to the database i used ```XAMPP```, but there should not be problems by using something else.
 
 ## Database
 
@@ -13,6 +13,8 @@ The database is meant to be a single account ciphered password manager, called p
 - ```psw```: ciphered password
 
 The database is automatically created and set up the first time you run the code, if it does not already exist.
+Here is the SQL statement:
+```"CREATE TABLE IF NOT EXISTS password_manager.sites (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, psw VARCHAR(255) NOT NULL, PRIMARY KEY (id, name, email))"```
 
 ## Database entries visualization
 It is possible to visualiza the entire database by choosing the fifth action ```Database retrieval``` in which i convert it into a ```pandas DataFrame``` before printing it. Using the same action is also possible to save the database as a .csv file to have it either ciphered and deciphered.
