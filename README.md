@@ -8,7 +8,7 @@ For the connection to the database i used ```XAMPP```, but there should not be p
 
 The database is meant to be a single account ciphered password manager, called password_manager. I defined only one table named ```sites``` with 4 columns:
 - ```id```: integer values used for the updates since everything is ciphered and therefore cannot be modified/accessed by searching its value directly
-- ```name```: site URL (google.com)
+- ```name```: site URL (eg. google.com)
 - ```email```: ciphered email
 - ```psw```: ciphered password
 
