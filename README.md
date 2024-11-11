@@ -40,8 +40,10 @@ The keys are automatically generated (by pressing ```Enter```) if not inserted i
 
 As expressed in the cmd while running the code, we must insert the key string contained between b'...' as we need to use them as String encoded and not Byte encoded. The correct switches between String/Byte for the encoding of the keys are already inside the code and should be modified with cautions.
 
-## Imports
-For the cryptography part:
+***<ins>The keys in the keys.txt file, as the passwords that might be in previous ciphered.csv files, are not my personal ones.</ins>***
+
+## Modules
+For the cryptography:
 ```
 pip install fernet
 ```

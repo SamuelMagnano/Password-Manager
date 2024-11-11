@@ -24,9 +24,9 @@ def initialization():
                 print("password_manager database created")
                 #if everything goes right i then create the main and only table sites (name,email,psw)
                 #TODO vedi se serve rendere email e psw TEXT, quindi 16mila caratteri, invece di VARCHAR(255)
-                csr.execute("CREATE TABLE IF NOT EXISTS password_manager.sites (name VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, psw VARCHAR(255) NOT NULL,PRIMARY KEY (name, email))")
+                csr.execute("CREATE TABLE IF NOT EXISTS password_manager.sites (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, psw VARCHAR(255) NOT NULL, PRIMARY KEY (id, name, email))")
                 print("Table sites created")
-            except Error as already_exists:
+            except Error as _:
                 print("Password Manager database already in localhost") 
             csr.close()
             db.close()
@@ -338,11 +338,13 @@ def db_retrieval(cipher,response):
     except Error as e:
         print(f"Error: {e}")
     print()
-    print(tabulate(deciphered_database.sort_values(by=['name']), headers='keys', tablefmt='fancy_grid', showindex=False))
+    deciphered_database = deciphered_database.sort_values(by=['name'])
+    ciphered_database = ciphered_database.sort_values(by=['name'])
+    print(tabulate(deciphered_database, headers='keys', tablefmt='fancy_grid', showindex=False))
     if response in [""," ","y","yes"]:
-        deciphered_database.to_csv('deciphered_database.csv', index=False)
+        deciphered_database.to_csv('deciphered_database.csv', index=False, mode='w')
         print("\nciphered_dat.csv created/updated!")
-        ciphered_database.to_csv('ciphered_database.csv', index=False)
+        ciphered_database.to_csv('ciphered_database.csv', index=False, mode='w')
         print("ciphered_database.csv created/updated!")
 
 
