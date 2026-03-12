@@ -25,7 +25,7 @@ It is possible to visualiza the entire database by choosing the fifth action ```
 In the code i defined 9 possible actions:
 - Exit
 - Upload URL/email/password to the Password Manager
-- Uplaod a .csv file (must be of the form name,email,psw) into the database
+- Upload a .csv file (must be of the form name,email,psw) into the database
 - Generate random password
 - Email + Password retrieval from URL
 - Database retrieval
@@ -40,7 +40,9 @@ For the encryption/decryption part i opted for the ```Fernet module```, a symmet
 
 I ensured a better security by making imperative the use of two separated keys: one for the emails and one for the passwords. In this way even if some "intruder" would find one of our keys, they would not be able to see anything clear.
 
-The keys are automatically generated (by pressing ```Enter```) if not inserted in the cmd when required. ***<ins>It is fundamental to save them somewhere as there are no possible ways to retrieve them in order to decypher the database.</ins>***
+The keys are automatically generated (by pressing ```Enter```) if not inserted in the cmd when required. 
+
+***<ins>It is fundamental to save them somewhere as there are no possible ways to retrieve them in order to decypher the database.</ins>***
 
 As expressed in the cmd while running the code, we must insert the key string contained between b'...' as we need to use them as String encoded and not Byte encoded. The correct switches between String/Byte for the encoding of the keys are already inside the code and should be modified with cautions.
 
