@@ -46,24 +46,35 @@ As expressed in the cmd while running the code, we must insert the key string co
 
 ***<ins>The keys in the keys.txt file, as the passwords that might be in previous ciphered.csv files, are not my personal ones.</ins>*** They have just been used for testing the program.
 
-## Modules
-For the cryptography:
+## How to run
+Access via terminal this folder and create the venv (virtual enviroment) inside of it
+```
+python -m venv venv
+```
+Activate the venv
+```
+venv\Scripts\activate
+```
+
+Then install the required libraries:
+
+- Cryptography:
 ```
 pip install fernet
 ```
-For the random password generation:
+- Random password generation:
 ```
 from random import randrange #built-in python module
 ```
-For the URL, email, password validation check
+- URL, email, password validation check
 ```
 pip install regex
 ```
-For the database connection and SQL executions:
+- Database connection and mySQL executions:
 ```
 pip install mysql-connector-python
 ```
-For the printing of the database:
+- Data manipulation and print:
 ```
 pip install pandas
 pip install tabulate
