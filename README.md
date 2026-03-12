@@ -1,4 +1,4 @@
-# Python localhost ciphered password manager
+# Python MySQL localhost ciphered password manager
 
 Since i almost lost access to my spotify account due to my poor password amministration, i decided to code and create my personal localhost password manager. 
 
@@ -70,7 +70,7 @@ from random import randrange #built-in python module
 ```
 pip install regex
 ```
-- Database connection and mySQL executions:
+- Database connection and MySQL executions:
 ```
 pip install mysql-connector-python
 ```
