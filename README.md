@@ -2,7 +2,7 @@
 
 Since i almost lost access to my spotify account due to my poor password amministration, i decided to code and create my personal localhost password manager. 
 
-For the connection to the database i used ```XAMPP```, but there should not be problems by using something else.
+For the connection to the database i used ```XAMPP```, but there should not be any problems in using something else.
 
 ## Database
 
